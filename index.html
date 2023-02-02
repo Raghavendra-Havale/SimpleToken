@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
+    <script>
+       if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+        }
+
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+        var tokenContract = new web3.eth.Contract([{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balances","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[],"stateMutability":"payable","type":"function","payable":true},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function","constant":true}],'0x6b3AAC35F17AD05C16F3f4B46B358cBcE43d955E');
+
+        // Check balance of a user's token
+        function balanceOf() {
+            tokenContract.methods.balanceOf($("#address").val()).call().then(function (result) {
+                document.getElementById("balance").innerHTML = result;
+            })
+        }
+
+        function transfer() {
+            tokenContract.methods.transfer($('#toAddress').val(), $('#value').val()).send(
+                {
+                    from: '0xEbbAfD84785b3Ca835A6192c51A8d1726F2766Eb', gas: 107035
+                }).on('transactionHash', function (hash) {
+                    document.getElementById("transSuccess").innerHTML = "Successfull, Transaction hash is " + hash
+                })
+        }
+
+    </script>
+</head>
+
+<body>
+
+    <h1>Token Contract Frontend</h1>
+    <p>Check Balance:</p>
+    <input type="text" id="address" placeholder="Enter address">
+    <button onclick="balanceOf()">Check</button>
+    <p id="balance"></p>
+    <br><br>
+    <hr>
+    <p>Transfer Tokens:</p>
+    <input type="text" id="toAddress" placeholder="Enter recipient address">
+    <input type="text" id="value" placeholder="Enter amount">
+    <button onclick="transfer()">Transfer</button>
+    <p id="transSuccess"></p>
+    <br><br>
+</body>
+
+</html>
